@@ -85,6 +85,21 @@ export class SelectComponent implements AfterViewInit,OnDestroy{
   ngAfterViewInit(): void {
       this.highLightSelectedOption();  
 
+      this.selectionModel.changed.pipe(
+        takeUntil(this.subject)
+      )
+      .subscribe((values)=>{
+        console.log(values);
+        //For deselecting unselected values
+        values.removed.forEach((value)=>{
+          this.findOptionByValue(value)?.deselect();
+        })
+        // If the values changes for select later on
+        values.added.forEach((value)=>{
+          this.findOptionByValue(value)?.highLightAsSelected();
+        })
+      })
+
       //Listening to Option Select events,
       // As they are rendered via Content Projection
       this.options?.changes.pipe(
