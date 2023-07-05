@@ -23,10 +23,13 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
       setTimeout(()=>{
         console.log("Ran")
-       this.initialValue=this.users[1];
+       this.initialValue={...this.users[1]};
        this.cd.markForCheck();
       },2000)
   }
 
   displayFn=(user:User)=>user.name;
+  compareWithFn=(user1:User|null,user2:User|null)=>{
+   return  user1?.id === user2?.id
+  }
 }

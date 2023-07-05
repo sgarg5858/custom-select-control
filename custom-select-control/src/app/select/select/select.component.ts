@@ -45,8 +45,11 @@ export class SelectComponent<T> implements AfterContentInit,OnDestroy{
     return this.value;
   }
 
+  //Comparing Objects, by default we give the implementation for primitives
+  @Input() compareWith = (a:T|null,b:T|null) => a===b;
+
   // @Input() value :string | null = null;
-  private selectionModel = new SelectionModel<T>();
+  private selectionModel = new SelectionModel<T>(undefined,undefined,undefined,this.compareWith);
 
   @Input() set value(value:SelectValueType<T>)
   {
@@ -150,7 +153,7 @@ export class SelectComponent<T> implements AfterContentInit,OnDestroy{
 
   findOptionByValue(value:T|null)
   {
-    const selectedOption = this.options?.find((option)=>option.value === value);
+    const selectedOption = this.options?.find((option)=>this.compareWith(option.value,value));
     return selectedOption;
   }
 

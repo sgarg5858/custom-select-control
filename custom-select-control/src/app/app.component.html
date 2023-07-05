@@ -3,6 +3,7 @@
   label="Pick the user" 
   [value]="initialValue"
   [displayWith]="displayFn"
+  [compareWith]="compareWithFn"
   >
     <app-option [value]="user" *ngFor="let user of users">{{user.name}}</app-option>
   
