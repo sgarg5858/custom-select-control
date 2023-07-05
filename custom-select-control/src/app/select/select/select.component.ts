@@ -2,6 +2,7 @@ import { AnimationEvent, animate, state, style, transition, trigger } from '@ang
 import { AfterViewInit, Component, ContentChildren, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList } from '@angular/core';
 import { OptionComponent } from '../option/option.component';
 import { SelectionModel } from '@angular/cdk/collections';
+import { Subject, merge, startWith, switchMap, take, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-select',
@@ -25,7 +26,7 @@ import { SelectionModel } from '@angular/cdk/collections';
     )
   ]
 })
-export class SelectComponent implements AfterViewInit{
+export class SelectComponent implements AfterViewInit,OnDestroy{
 
   @Input() label="";
 
@@ -84,9 +85,27 @@ export class SelectComponent implements AfterViewInit{
   ngAfterViewInit(): void {
       this.highLightSelectedOption();  
 
-  }
+      //Listening to Option Select events,
+      // As they are rendered via Content Projection
+      this.options?.changes.pipe(
+        startWith<QueryList<OptionComponent>>(this.options),
+        switchMap((options)=> merge(...options.map(o=>o.selected))),
+        takeUntil(this.subject)
+      ).subscribe((selectionOption)=>{
+        this.handleSelection(selectionOption);
+      })
+    }
 
-   
+    handleSelection(selectedOption:OptionComponent)
+    {
+      if(selectedOption.value)
+      {
+       //Toggle is imp to as if value is already selected it will handle that 
+      this.selectionModel.toggle(selectedOption.value);
+      this.selectionChanged.emit(selectedOption.value);
+      this.closePanel();
+      }
+    }
 
   highLightSelectedOption()
   {
@@ -100,6 +119,11 @@ export class SelectComponent implements AfterViewInit{
     return selectedOption;
   }
 
- 
+  //Unsubscription Logic
+  private subject = new Subject<void>();
+  ngOnDestroy(): void {
+      this.subject.next();
+      this.subject.complete();
+  }
 
 }
