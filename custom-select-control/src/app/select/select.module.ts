@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SelectComponent } from './select/select.component';
 import { OptionComponent } from './option/option.component';
+import { OverlayModule } from '@angular/cdk/overlay';
 
 
 
@@ -11,7 +12,7 @@ import { OptionComponent } from './option/option.component';
     OptionComponent
   ],
   imports: [
-    CommonModule
+    CommonModule,OverlayModule
   ],exports:[
     SelectComponent,OptionComponent
   ]

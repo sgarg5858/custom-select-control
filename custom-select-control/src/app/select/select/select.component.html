@@ -1,5 +1,26 @@
 <div class="label">{{label}}</div>
-<div class="control">
+
+<!-- cdkOverlayOrigin  is a directive where our ng-template overlay will be attached -->
+<div class="control" cdkOverlayOrigin #origin="cdkOverlayOrigin">
     <div class="selected-value" [ngClass]="{empty:!value}">{{value || "Nothing is selected...."}}</div>
     <div class="drop-down-icon">👇🏻</div>
 </div>
+<!-- cdkConnectedOverlay defines the overlay -->
+<!-- cdkConnectedOverlayOrigin takes an argument for origin, which basically connects both -->
+<ng-template 
+cdkConnectedOverlay 
+[cdkConnectedOverlayOrigin]="origin"
+[cdkConnectedOverlayOpen]="isOpen"
+
+[cdkConnectedOverlayOffsetY]="6"
+[cdkConnectedOverlayOffsetX]="-11"
+
+cdkConnectedOverlayHasBackdrop
+cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
+(backdropClick)="closePanel()"
+
+>
+    <div class="panel" [@dropdown] (@dropdown.done)="onPanelAnimationDone($event)">
+        I am the panel
+    </div>
+</ng-template>
