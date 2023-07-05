@@ -2,7 +2,7 @@
 
 <!-- cdkOverlayOrigin  is a directive where our ng-template overlay will be attached -->
 <div class="control" cdkOverlayOrigin #origin="cdkOverlayOrigin">
-    <div class="selected-value" [ngClass]="{empty:!value}">{{value || "Nothing is selected...."}}</div>
+    <div class="selected-value" [ngClass]="{empty:!value}">{{displayValue || "Nothing is selected...."}}</div>
     <div class="drop-down-icon">👇🏻</div>
 </div>
 <!-- cdkConnectedOverlay defines the overlay -->

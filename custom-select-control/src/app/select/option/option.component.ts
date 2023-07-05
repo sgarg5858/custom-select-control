@@ -1,13 +1,17 @@
-import { Component, EventEmitter, HostBinding, HostListener, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, HostBinding, HostListener, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-option',
   templateUrl: './option.component.html',
-  styleUrls: ['./option.component.scss']
+  styleUrls: ['./option.component.scss'],
+  changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class OptionComponent<T> {
 
+  constructor(private cd:ChangeDetectorRef){}
+
   @Input() value:T|null =null;
+  
 
  //Disable Functionality:
 
@@ -35,6 +39,7 @@ export class OptionComponent<T> {
   highLightAsSelected()
   {
     this.isSelected=true;
+    this.cd.markForCheck();
   }
 
   deselect(){

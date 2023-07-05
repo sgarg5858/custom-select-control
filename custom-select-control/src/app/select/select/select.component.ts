@@ -1,8 +1,8 @@
 import { AnimationEvent, animate, state, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, ContentChildren, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList } from '@angular/core';
+import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList } from '@angular/core';
 import { OptionComponent } from '../option/option.component';
 import { SelectionModel } from '@angular/cdk/collections';
-import { Subject, merge, startWith, switchMap, takeUntil } from 'rxjs';
+import { Subject, merge, startWith, switchMap, takeUntil, tap } from 'rxjs';
 
 export type SelectValueType<T> = T | null;
 
@@ -10,6 +10,7 @@ export type SelectValueType<T> = T | null;
   selector: 'app-select',
   templateUrl: './select.component.html',
   styleUrls: ['./select.component.scss'],
+  changeDetection:ChangeDetectionStrategy.OnPush,
   animations:[
     trigger('dropdown',[
     state('void',style({
@@ -28,9 +29,21 @@ export type SelectValueType<T> = T | null;
     )
   ]
 })
-export class SelectComponent<T> implements AfterViewInit,OnDestroy{
+export class SelectComponent<T> implements AfterContentInit,OnDestroy{
 
   @Input() label="";
+  constructor(private cd:ChangeDetectorRef){}
+
+  //Display value for objects
+  @Input() displayWith :((value:T)=>string|number)|null = null;
+
+  protected get displayValue(){
+    if(this.displayWith && this.value)
+    {
+      return this.displayWith(this.value);
+    }
+    return this.value;
+  }
 
   // @Input() value :string | null = null;
   private selectionModel = new SelectionModel<T>();
@@ -84,8 +97,8 @@ export class SelectComponent<T> implements AfterViewInit,OnDestroy{
   //component
   @ContentChildren(OptionComponent,{descendants:true}) options:QueryList<OptionComponent<T>>|null =null;
 
-  ngAfterViewInit(): void {
-      this.highLightSelectedOption();  
+  ngAfterContentInit(): void {
+
 
       this.selectionModel.changed.pipe(
         takeUntil(this.subject)
@@ -106,6 +119,10 @@ export class SelectComponent<T> implements AfterViewInit,OnDestroy{
       // As they are rendered via Content Projection
       this.options?.changes.pipe(
         startWith<QueryList<OptionComponent<T>>>(this.options),
+        //This will run also when the options values changes too.
+        tap(()=>{
+          this.highLightSelectedOption();  
+        }),
         switchMap((options)=> merge(...options.map(o=>o.selected))),
         takeUntil(this.subject)
       ).subscribe((selectionOption)=>{
@@ -121,6 +138,7 @@ export class SelectComponent<T> implements AfterViewInit,OnDestroy{
       this.selectionModel.toggle(selectedOption.value);
       this.selectionChanged.emit(selectedOption.value);
       this.closePanel();
+      this.cd.markForCheck();
       }
     }
 
