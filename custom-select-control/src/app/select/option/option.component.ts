@@ -5,9 +5,9 @@ import { Component, EventEmitter, HostBinding, HostListener, Input, Output } fro
   templateUrl: './option.component.html',
   styleUrls: ['./option.component.scss']
 })
-export class OptionComponent {
+export class OptionComponent<T> {
 
-  @Input() value:string|null =null;
+  @Input() value:T|null =null;
 
  //Disable Functionality:
 
@@ -19,7 +19,7 @@ export class OptionComponent {
   //Selecte Functionality:
 
 
-  @Output() selected = new EventEmitter<OptionComponent>();
+  @Output() selected = new EventEmitter<OptionComponent<T>>();
 
   @HostBinding('class.selected')
   protected isSelected=false;

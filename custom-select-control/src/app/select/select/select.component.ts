@@ -2,7 +2,9 @@ import { AnimationEvent, animate, state, style, transition, trigger } from '@ang
 import { AfterViewInit, Component, ContentChildren, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList } from '@angular/core';
 import { OptionComponent } from '../option/option.component';
 import { SelectionModel } from '@angular/cdk/collections';
-import { Subject, merge, startWith, switchMap, take, takeUntil } from 'rxjs';
+import { Subject, merge, startWith, switchMap, takeUntil } from 'rxjs';
+
+export type SelectValueType<T> = T | null;
 
 @Component({
   selector: 'app-select',
@@ -26,14 +28,14 @@ import { Subject, merge, startWith, switchMap, take, takeUntil } from 'rxjs';
     )
   ]
 })
-export class SelectComponent implements AfterViewInit,OnDestroy{
+export class SelectComponent<T> implements AfterViewInit,OnDestroy{
 
   @Input() label="";
 
   // @Input() value :string | null = null;
-  private selectionModel = new SelectionModel<string>();
+  private selectionModel = new SelectionModel<T>();
 
-  @Input() set value(value:string|null)
+  @Input() set value(value:SelectValueType<T>)
   {
     this.selectionModel.clear();
     if(value)
@@ -45,7 +47,7 @@ export class SelectComponent implements AfterViewInit,OnDestroy{
   {
     return this.selectionModel.selected[0] || null;
   }
-  @Output() selectionChanged = new EventEmitter<string|null>();
+  @Output() selectionChanged = new EventEmitter<SelectValueType<T>>();
 
   //Panel Open & CLose
   isOpen=false;
@@ -80,7 +82,7 @@ export class SelectComponent implements AfterViewInit,OnDestroy{
 
   //We are setting descendants=> true in case user puts the option components inside wrapper
   //component
-  @ContentChildren(OptionComponent,{descendants:true}) options:QueryList<OptionComponent>|null =null;
+  @ContentChildren(OptionComponent,{descendants:true}) options:QueryList<OptionComponent<T>>|null =null;
 
   ngAfterViewInit(): void {
       this.highLightSelectedOption();  
@@ -103,7 +105,7 @@ export class SelectComponent implements AfterViewInit,OnDestroy{
       //Listening to Option Select events,
       // As they are rendered via Content Projection
       this.options?.changes.pipe(
-        startWith<QueryList<OptionComponent>>(this.options),
+        startWith<QueryList<OptionComponent<T>>>(this.options),
         switchMap((options)=> merge(...options.map(o=>o.selected))),
         takeUntil(this.subject)
       ).subscribe((selectionOption)=>{
@@ -111,7 +113,7 @@ export class SelectComponent implements AfterViewInit,OnDestroy{
       })
     }
 
-    handleSelection(selectedOption:OptionComponent)
+    handleSelection(selectedOption:OptionComponent<T>)
     {
       if(selectedOption.value)
       {
@@ -128,7 +130,7 @@ export class SelectComponent implements AfterViewInit,OnDestroy{
     selectedOption?.highLightAsSelected();
   }
 
-  findOptionByValue(value:string|null)
+  findOptionByValue(value:T|null)
   {
     const selectedOption = this.options?.find((option)=>option.value === value);
     return selectedOption;
