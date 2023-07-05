@@ -1,5 +1,6 @@
 import { AnimationEvent, animate, state, style, transition, trigger } from '@angular/animations';
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, ContentChildren, EventEmitter, HostListener, Input, Output, QueryList } from '@angular/core';
+import { OptionComponent } from '../option/option.component';
 
 @Component({
   selector: 'app-select',
@@ -23,7 +24,7 @@ import { Component, EventEmitter, HostListener, Input, Output } from '@angular/c
     )
   ]
 })
-export class SelectComponent {
+export class SelectComponent implements AfterViewInit{
 
   @Input() label="Pick the user";
   @Input() value :string | null = null;
@@ -54,6 +55,29 @@ export class SelectComponent {
     {
       this.closed.emit();
     }
+  }
+
+  
+  //Highlighting the initial Selected Option
+
+  //We are setting descendants=> true in case user puts the option components inside wrapper
+  //component
+  @ContentChildren(OptionComponent,{descendants:true}) options:QueryList<OptionComponent>|null =null;
+
+  ngAfterViewInit(): void {
+      this.highLightSelectedOption();  
+    }
+
+  highLightSelectedOption()
+  {
+    const selectedOption = this.findOptionByValue(this.value);
+    selectedOption?.highLightAsSelected();
+  }
+
+  findOptionByValue(value:string|null)
+  {
+    const selectedOption = this.options?.find((option)=>option.value === value);
+    return selectedOption;
   }
 
 

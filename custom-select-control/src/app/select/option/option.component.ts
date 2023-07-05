@@ -32,6 +32,11 @@ export class OptionComponent {
     this.selected.emit(this);
   }
 
+  highLightAsSelected()
+  {
+    this.isSelected=true;
+  }
+
   deselect(){
     this.isSelected=false;
   }
