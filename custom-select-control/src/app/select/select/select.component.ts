@@ -1,6 +1,7 @@
 import { AnimationEvent, animate, state, style, transition, trigger } from '@angular/animations';
-import { AfterViewInit, Component, ContentChildren, EventEmitter, HostListener, Input, Output, QueryList } from '@angular/core';
+import { AfterViewInit, Component, ContentChildren, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList } from '@angular/core';
 import { OptionComponent } from '../option/option.component';
+import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
   selector: 'app-select',
@@ -26,8 +27,24 @@ import { OptionComponent } from '../option/option.component';
 })
 export class SelectComponent implements AfterViewInit{
 
-  @Input() label="Pick the user";
-  @Input() value :string | null = null;
+  @Input() label="";
+
+  // @Input() value :string | null = null;
+  private selectionModel = new SelectionModel<string>();
+
+  @Input() set value(value:string|null)
+  {
+    this.selectionModel.clear();
+    if(value)
+    {
+      this.selectionModel.select(value);
+    }
+  }
+  get value()
+  {
+    return this.selectionModel.selected[0] || null;
+  }
+  @Output() selectionChanged = new EventEmitter<string|null>();
 
   //Panel Open & CLose
   isOpen=false;
@@ -66,7 +83,10 @@ export class SelectComponent implements AfterViewInit{
 
   ngAfterViewInit(): void {
       this.highLightSelectedOption();  
-    }
+
+  }
+
+   
 
   highLightSelectedOption()
   {
@@ -80,5 +100,6 @@ export class SelectComponent implements AfterViewInit{
     return selectedOption;
   }
 
+ 
 
 }
