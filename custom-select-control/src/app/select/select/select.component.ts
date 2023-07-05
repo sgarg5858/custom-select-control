@@ -1,5 +1,5 @@
 import { AnimationEvent, animate, state, style, transition, trigger } from '@angular/animations';
-import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, EventEmitter, HostListener, Input, OnDestroy, Output, QueryList } from '@angular/core';
+import { AfterContentInit, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChildren, EventEmitter, HostListener, Input, OnChanges, OnDestroy, Output, QueryList, SimpleChanges } from '@angular/core';
 import { OptionComponent } from '../option/option.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { Subject, merge, startWith, switchMap, takeUntil, tap } from 'rxjs';
@@ -29,7 +29,7 @@ export type SelectValueType<T> = T | null;
     )
   ]
 })
-export class SelectComponent<T> implements AfterContentInit,OnDestroy{
+export class SelectComponent<T> implements OnChanges,AfterContentInit,OnDestroy{
 
   @Input() label="";
   constructor(private cd:ChangeDetectorRef){}
@@ -47,9 +47,16 @@ export class SelectComponent<T> implements AfterContentInit,OnDestroy{
 
   //Comparing Objects, by default we give the implementation for primitives
   @Input() compareWith = (a:T|null,b:T|null) => a===b;
+  ngOnChanges(changes: SimpleChanges): void {
+      if(changes['compareWith'])
+      {
+        this.selectionModel.compareWith=changes['compareWith']?.currentValue;
+        this.highLightSelectedOption();
+      }
+  }
 
   // @Input() value :string | null = null;
-  private selectionModel = new SelectionModel<T>(undefined,undefined,undefined,this.compareWith);
+  private selectionModel = new SelectionModel<T>();
 
   @Input() set value(value:SelectValueType<T>)
   {
