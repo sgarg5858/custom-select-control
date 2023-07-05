@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, HostBinding, HostListener, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-option',
@@ -7,4 +7,32 @@ import { Component } from '@angular/core';
 })
 export class OptionComponent {
 
+  @Input() value:string|null =null;
+
+ //Disable Functionality:
+
+  @HostBinding('class.disabled')
+  @Input() disabled =false;
+
+  @Input() disableReason: string | null = null;
+
+  //Selecte Functionality:
+
+
+  @Output() selected = new EventEmitter<OptionComponent>();
+
+  @HostBinding('class.selected')
+  protected isSelected=false;
+
+  @HostListener('click')
+  select()
+  {
+    if(this.disabled) return;
+    this.isSelected=true;
+    this.selected.emit(this);
+  }
+
+  deselect(){
+    this.isSelected=false;
+  }
 }

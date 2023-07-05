@@ -1,1 +1,6 @@
-<p>option works!</p>
+<div class="option-content">
+    <ng-content></ng-content>
+</div>
+<div class="disable-reason" *ngIf="disabled">
+    {{disableReason}}
+</div>

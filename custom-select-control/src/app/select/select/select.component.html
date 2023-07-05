@@ -22,6 +22,10 @@ cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
 
 >
     <div class="panel" [@dropdown] (@dropdown.done)="onPanelAnimationDone($event)">
-        I am the panel
+        <!-- //Using Content Projection to render the options gives the end user the flexibility -->
+        <!-- //to write their own html -->
+        <!-- They can provide value to option component. -->
+        <!-- They also should be able to disable the option. and provide disable reason as well. -->
+        <ng-content></ng-content>
     </div>
 </ng-template>
