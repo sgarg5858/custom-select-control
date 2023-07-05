@@ -18,6 +18,7 @@ cdkConnectedOverlay
 cdkConnectedOverlayHasBackdrop
 cdkConnectedOverlayBackdropClass="cdk-overlay-transparent-backdrop"
 (backdropClick)="closePanel()"
+(detach)="closePanel()"
 
 >
     <div class="panel" [@dropdown] (@dropdown.done)="onPanelAnimationDone($event)">
